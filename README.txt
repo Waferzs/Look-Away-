@@ -14,7 +14,11 @@ Purpose:
 This project was created as a part of a university asisgnment to develop a C++ application, in which there was no specificed requirement aside from coding it in C++. It serves as a pracitical excercise in using basic game mechanics,
 user input handling, and timing functionalities.
 
+Dependencies
+The .exe file uses window dependencies in order to make colors appear in the terminal as well as clear the screen.
+This code has not been tested outside of Window operating computers such as Macs and on Linux
+
+
 How to Play:
-1.) Download Look Away
-2.) Unzip file
-3.) Open game.exe
+1.) Extract file from zip
+2.) Run exe file
