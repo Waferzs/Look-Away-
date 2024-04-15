@@ -15,15 +15,6 @@ This project was created as a part of a university asisgnment to develop a C++ a
 user input handling, and timing functionalities.
 
 How to Play:
-gamecode ver
-1.) Clone the repository to your local machine
-2.) Compile source code using a c++ compiler
-3.) Run the cpp in your compiler
-4.) Follow instructions to play the game
-
-game.exe ver
-1.) Download the .exe file
-2.) Open the game.exe to play the game
-
-note) Windows will detect this this file might harm your computer, it will not. Click
-allow to play the game.
+1.) Download Look Away
+2.) Unzip file
+3.) Open game.exe
