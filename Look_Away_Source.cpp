@@ -132,7 +132,7 @@ void clearScreen() {
 void gameLoop(float delay, int& score, bool& increasedDifficulty, int& lives) {
     bool gameRunning = true;
 
-    srand(static_cast<unsigned int>(time(nullptr)));
+    srand((time(nullptr)));
 
     // Initialize the medium difficulty message flag outside the loop
     bool mediumDifficultyMessageShown = false;
@@ -142,10 +142,12 @@ void gameLoop(float delay, int& score, bool& increasedDifficulty, int& lives) {
         // Clear the screen (platform-dependent)
         clearScreen();
 
-        // Draw the game screen
-        cout << "Look Away Game\n";
-        cout << "Score: " << score << "\n";
-        cout << "Lives: " << lives << endl;
+// Draw the game screen
+cout << "Look Away Game\n";
+cout << "Score: " << score << "\n";
+cout << "Lives: " << lives << " \n";
+cout << "--------------------------\n"; // Add a newline character here
+
 
         pair<char, int> arrow = generateDirectionWithColor(prevColor); //pair here gives a direction alongside a color to make said arrow to be
         char direction = arrow.first;
