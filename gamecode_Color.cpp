@@ -2,13 +2,14 @@
 #include <chrono>
 #include <thread>
 #include <ctime>
-#include <cstdlib> //
+#include <cstdlib>
 
 #ifdef _WIN32
+#include <windows.h>
 #include <conio.h>
 #else
 #include <ncurses.h>
-#endif //conio.h is a bit finicky as some computers can run it this allows for either or
+#endif
 
 using namespace std;
 
@@ -16,6 +17,12 @@ const float EASY_DELAY = 2.0f; // Delay in seconds for easy mode
 const float MEDIUM_DELAY = 1.0f; // Delay in seconds for medium mode
 const float HARD_DELAY = 0.5f; // Delay in seconds for hard mode
 const int LIVES = 3; // Amount of times user input can be wrong or time to count down
+
+// Color constants
+const int COLOR_RED = 12;
+const int COLOR_GREEN = 10;
+const int COLOR_YELLOW = 14;
+const int COLOR_BLUE = 9;
 
 // Function to explain game instructions
 void displayInstructions() {
@@ -38,16 +45,47 @@ void displayInstructions() {
     cin.get();
 }
 
-// Function to generate a random direction for the object
-char generateDirection() {
+// Function to generate a random direction for the object along with color
+pair<char, int> generateDirectionWithColor(int prevColor) {
     int randNum = rand() % 4;
+    char direction;
+    int color;
+    
+    do {
+        color = rand() % 15 + 1; // Generate a random color between 1 and 15
+    } while (color == prevColor); // Ensure color is not the same as previous one
+
     switch (randNum) {
-    case 0: return 'L'; // Left
-    case 1: return 'R'; // Right
-    case 2: return 'U'; // Up
-    case 3: return 'D'; // Down
-    default: return ' ';
+    case 0: 
+        direction = '<'; // Left
+        break;
+    case 1: 
+        direction = '>'; // Right
+        break;
+    case 2: 
+        direction = '^'; // Up
+        break;
+    case 3: 
+        direction = 'v'; // Down
+        break;
+    default:
+        direction = ' ';
     }
+    return make_pair(direction, color);
+}
+
+// Function to set text color (Windows only)
+void setTextColor(int color) {
+#ifdef _WIN32
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
+#endif
+}
+
+// Function to reset text color (Windows only)
+void resetTextColor() {
+#ifdef _WIN32
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7); // Default color (white)
+#endif
 }
 
 // Function to handle user input
@@ -64,7 +102,7 @@ char getUserInput() {
 #endif
 }
 
-// Function to handle game over scenarios
+// Function to handle game over scenarios and losing a life
 void handleGameOver(bool& gameRunning, int& score, int& lives, bool lookedInDirection, bool invalidInput, bool sameDirection) {
     if (lives == 0) {
         cout << "Game over! You looked in the direction of the arrow or ran out of lives.\n";
@@ -87,6 +125,15 @@ void handleGameOver(bool& gameRunning, int& score, int& lives, bool lookedInDire
     }
 }
 
+// Function to clear the screen (platform-dependent) Without this, garbage characters could be seen
+void clearScreen() {
+#ifdef _WIN32
+    system("cls");
+#else
+    system("clear");
+#endif
+}
+
 // Function to simulate the game loop
 void gameLoop(float delay, int& score, bool& increasedDifficulty, int& lives) {
     bool gameRunning = true;
@@ -95,68 +142,48 @@ void gameLoop(float delay, int& score, bool& increasedDifficulty, int& lives) {
 
     // Initialize the medium difficulty message flag outside the loop
     bool mediumDifficultyMessageShown = false;
-
-    int colorCount = 0;
+    int prevColor = -1; // Initialize prevColor to an invalid value
 
     while (gameRunning && lives > 0) {
         // Clear the screen (platform-dependent)
-        cout << "\033[2J\033[H";
+        clearScreen();
 
         // Draw the game screen
         cout << "Look Away Game\n";
         cout << "Score: " << score << "\n";
         cout << "Lives: " << lives << endl;
 
-        // Generate a random direction for the object
-        char direction = generateDirection();
+        pair<char, int> arrow = generateDirectionWithColor(prevColor); //pair here gives a direction alongside a color to make said arrow to be
+        char direction = arrow.first;
+        int color = arrow.second;
 
-        // Set color based on difficulty level
-        switch (colorCount % 3) {
-        case 0:
-            cout << "\033[1;32m"; // Green for easy mode
-            break;
-        case 1:
-            cout << "\033[1;33m"; // Yellow for medium mode
-            break;
-        case 2:
-            cout << "\033[1;31m"; // Red for hard mode
-            break;
-        }
-        cout << (direction == 'L' ? "<" : (direction == 'R' ? ">" : (direction == 'U' ? "^" : "v"))) << "\033[0m\n"; // Reset color
+        // Set text color
+        setTextColor(color);
+        cout << direction << endl;
+        resetTextColor();
 
-        // Increment color count
-        ++colorCount;
+        // Update the previous color
+        prevColor = color;
 
         // Sleep for a short duration to control game speed
         this_thread::sleep_for(chrono::milliseconds(static_cast<int>(delay * 1000)));
 
         // Check if player has pressed a valid key
+        char keyPressed = getUserInput();
         
-        char keyPressed;
-#ifdef _WIN32
-        if (_kbhit()) {
-            keyPressed = _getch();
-        }
-        else {
-            keyPressed = '\0';
-        }
-#else
-        keyPressed = getch();
-#endif
-
         if (keyPressed != '\0' && (keyPressed == 'a' || keyPressed == 'w' || keyPressed == 's' || keyPressed == 'd')) {
             bool correctDirection = false;
             switch (direction) {
-            case 'L':
+            case '<':
                 correctDirection = (keyPressed == 'a');
                 break;
-            case 'R':
+            case '>':
                 correctDirection = (keyPressed == 'd');
                 break;
-            case 'U':
+            case '^':
                 correctDirection = (keyPressed == 'w');
                 break;
-            case 'D':
+            case 'v':
                 correctDirection = (keyPressed == 's');
                 break;
             }
@@ -235,7 +262,3 @@ int main() {
 
     return 0;
 }
-
-
-
-
