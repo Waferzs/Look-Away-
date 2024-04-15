@@ -52,9 +52,8 @@ pair<char, int> generateDirectionWithColor(int prevColor) {
     int color;
     
     do {
-        color = rand() % 15 + 1; // Generate a random color between 1 and 15
-    } while (color == prevColor); // Ensure color is not the same as previous one
-
+        color = rand() % 7 + 9; // Generates colors from 9 to 15 as those are vibrant and do not blend into the background
+    } while (color == prevColor);
     switch (randNum) {
     case 0: 
         direction = '<'; // Left

@@ -3,6 +3,7 @@
 #include <thread>
 #include <ctime>
 #include <cstdlib>
+#include <string>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -52,28 +53,26 @@ pair<char, int> generateDirectionWithColor(int prevColor) {
     int color;
     
     do {
-        color = rand() % 15 + 1; // Generate a random color between 1 and 15
-    } while (color == prevColor); // Ensure color is not the same as previous one
-
+        color = rand() % 7 + 9; // Generates colors from 9 to 15 as those are vibrant and do not blend into the background
+    } while (color == prevColor);
     switch (randNum) {
     case 0: 
-        direction = '<'; // Left
+        direction = "<<<<<"; // Left
         break;
     case 1: 
-        direction = '>'; // Right
+        direction = ">>>>>"; // Right
         break;
     case 2: 
-        direction = '^'; // Up
+        direction = "^^^^^^^"; // Up
         break;
     case 3: 
-        direction = 'v'; // Down
+        direction = "vvvvvv"; // Down
         break;
     default:
         direction = ' ';
     }
     return make_pair(direction, color);
 }
-
 // Function to set text color (Windows only)
 void setTextColor(int color) {
 #ifdef _WIN32
@@ -102,7 +101,7 @@ char getUserInput() {
 #endif
 }
 
-// Function to handle game over scenarios
+// Function to handle game over scenarios and losing a life
 void handleGameOver(bool& gameRunning, int& score, int& lives, bool lookedInDirection, bool invalidInput, bool sameDirection) {
     if (lives == 0) {
         cout << "Game over! You looked in the direction of the arrow or ran out of lives.\n";
@@ -125,7 +124,7 @@ void handleGameOver(bool& gameRunning, int& score, int& lives, bool lookedInDire
     }
 }
 
-// Function to clear the screen (platform-dependent)
+// Function to clear the screen (platform-dependent) Without this, garbage characters could be seen
 void clearScreen() {
 #ifdef _WIN32
     system("cls");
@@ -151,9 +150,9 @@ void gameLoop(float delay, int& score, bool& increasedDifficulty, int& lives) {
         // Draw the game screen
         cout << "Look Away Game\n";
         cout << "Score: " << score << "\n";
-        cout << "Lives: " << lives << endl;
+        cout << "Lives: " << lives << endl << endl;
 
-        pair<char, int> arrow = generateDirectionWithColor(prevColor);
+        pair<char, int> arrow = generateDirectionWithColor(prevColor); //pair here gives a direction alongside a color to make said arrow to be
         char direction = arrow.first;
         int color = arrow.second;
 
